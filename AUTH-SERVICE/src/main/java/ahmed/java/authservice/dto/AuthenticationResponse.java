@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuthenticationResponse {
     private String token;
+    private boolean requiresMfa;
+
 
     // Default constructor
     public AuthenticationResponse() {}

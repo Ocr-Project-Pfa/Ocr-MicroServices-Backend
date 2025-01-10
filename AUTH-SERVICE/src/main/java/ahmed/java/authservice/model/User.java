@@ -23,6 +23,8 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private String email;
+    private boolean mfaEnabled;
+    private String mfaSecret;
 
     // Default constructor
     public User() {}
@@ -129,5 +131,20 @@ public class User implements UserDetails {
         public User build() {
             return new User(id, username, password, email);
         }
+    }
+    public boolean isMfaEnabled() {
+        return mfaEnabled;
+    }
+
+    public void setMfaEnabled(boolean mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
+    }
+
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(String mfaSecret) {
+        this.mfaSecret = mfaSecret;
     }
 }

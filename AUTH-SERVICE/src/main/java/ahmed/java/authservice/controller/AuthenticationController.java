@@ -3,6 +3,7 @@ package ahmed.java.authservice.controller;
 import ahmed.java.authservice.Service.AuthenticationService;
 import ahmed.java.authservice.dto.AuthenticationRequest;
 import ahmed.java.authservice.dto.AuthenticationResponse;
+import ahmed.java.authservice.dto.OtpVerificationRequest;
 import ahmed.java.authservice.dto.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,12 @@ public class AuthenticationController {
             @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(service.register(request));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<AuthenticationResponse> verifyOtp(
+            @RequestBody OtpVerificationRequest request) {
+        return ResponseEntity.ok(service.verifyOtp(request.getUsername(), request.getOtp()));
     }
 
     @PostMapping("/authenticate")

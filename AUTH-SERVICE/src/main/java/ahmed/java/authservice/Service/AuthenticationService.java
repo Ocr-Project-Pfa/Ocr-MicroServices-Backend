@@ -3,6 +3,7 @@ package ahmed.java.authservice.Service;
 import ahmed.java.authservice.dto.AuthenticationRequest;
 import ahmed.java.authservice.dto.AuthenticationResponse;
 import ahmed.java.authservice.dto.RegisterRequest;
+import ahmed.java.authservice.exceptions.InvalidOtpException;
 import ahmed.java.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class AuthenticationService {
     private  JwtService jwtService;
     @Autowired
     private  AuthenticationManager authenticationManager;
+    @Autowired
+    private OtpService otpService;
+    @Autowired
+    private EmailService emailService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         ahmed.java.authservice.model.User user = ahmed.java.authservice.model.User.builder()
@@ -45,11 +50,35 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken((UserDetails)user);
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+
+        if (user.isMfaEnabled()) {
+            String otp = otpService.generateOTP(user.getUsername());
+            emailService.sendOtpEmail(user.getEmail(), otp);
+            return AuthenticationResponse.builder()
+                    .token(null)
+                    .requiresMfa(true)
+                    .build();
+        }
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .requiresMfa(false)
                 .build();
     }
+
+    public AuthenticationResponse verifyOtp(String username, String otp) {
+        if (!otpService.validateOTP(username, otp)) {
+            throw new InvalidOtpException("Invalid OTP");
+        }
+
+        var user = userRepository.findByUsername(username).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .requiresMfa(false)
+                .build();
+    }
+
+
 }

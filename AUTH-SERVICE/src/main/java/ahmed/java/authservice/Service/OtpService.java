@@ -13,11 +13,35 @@ public class OtpService {
     private static final long OTP_VALID_DURATION = 5 * 60 * 1000;  // 5 minutes
     private final Map<String, OtpData> otpCache = Maps.newHashMap();
 
-    @Data
-    @AllArgsConstructor
     private static class OtpData {
         private String otp;
         private long expiryTime;
+
+        // Default constructor
+        public OtpData() {}
+
+        // Constructor with parameters
+        public OtpData(String otp, long expiryTime) {
+            this.otp = otp;
+            this.expiryTime = expiryTime;
+        }
+
+        // Getters and setters
+        public String getOtp() {
+            return otp;
+        }
+
+        public void setOtp(String otp) {
+            this.otp = otp;
+        }
+
+        public long getExpiryTime() {
+            return expiryTime;
+        }
+
+        public void setExpiryTime(long expiryTime) {
+            this.expiryTime = expiryTime;
+        }
     }
 
     public String generateOTP(String username) {

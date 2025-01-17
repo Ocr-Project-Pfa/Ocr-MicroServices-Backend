@@ -11,15 +11,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private  JwtAuthenticationFilter jwtAuthFilter;
-    @Autowired
-    private  AuthenticationProvider authenticationProvider;
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthFilter;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,6 +26,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()  // Add this if needed
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -37,5 +37,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
